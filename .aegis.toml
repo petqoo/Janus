@@ -1,0 +1,18 @@
+# .aegis.toml
+
+# Command to build your Go application.
+[build]
+  # This command builds the TARGET app, not Aegis itself.
+  cmd = "go build -o ./tmp/target-app ./app/main.go"
+
+  # The path to the binary that the command above creates.
+  bin = "./tmp/target-app"
+
+# Settings for watching files.
+[watch]
+  root = "."
+  exclude_dir = ["tmp", "vendor", ".git"]
+
+# The crash-proof safety net configuration.
+[safety_net]
+  probation_ms = 2500
