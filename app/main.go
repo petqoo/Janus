@@ -8,7 +8,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, awgis!")
+		fmt.Fprintf(w, "Helo, awgis!")
 	})
 
 	log.Println("✅ Target App running on http://localhost:8080")
