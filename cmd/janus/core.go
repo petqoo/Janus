@@ -78,6 +78,7 @@ func StartWatcher(cfg *config.Config, sub chan any) {
 func buildAndRun(cfg *config.Config, sub chan any) {
 	challengerBinPath := cfg.Build.Bin
 	stableBinPath := challengerBinPath + ".stable"
+	defer buildLock.Unlock()
 
 	stopProcess(sub)
 
