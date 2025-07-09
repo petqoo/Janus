@@ -11,7 +11,7 @@ func main() {
 		fmt.Fprintf(w, "Helo, awghey!")
 	})
 
-	log.Println(" Tgetning on http://localhost:8080")
+	log.Println(" ttp://a8ffgegwegwgwrwrgrwrwrrgfn n0d8d0")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("Fatal error: %s", err)
 	}

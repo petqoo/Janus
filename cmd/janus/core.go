@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sync"
 	"syscall"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 )
 
 var stableApp *exec.Cmd
+ var buildLock sync.Mutex
 
 func StartWatcher(cfg *config.Config, sub chan any) {
 	watcher, err := fsnotify.NewWatcher()
@@ -31,7 +33,7 @@ func StartWatcher(cfg *config.Config, sub chan any) {
 	})
 
 	var timer *time.Timer
-	debounceDuration := 500 * time.Millisecond
+	debounceDuration := 50 * time.Millisecond
 
 	for {
 		select {
@@ -41,7 +43,14 @@ func StartWatcher(cfg *config.Config, sub chan any) {
 			}
 			return timer.C
 		}():
+
 			timer = nil
+			if !buildLock.TryLock() {
+				// If we can't get the lock, it means a build is already in progress.
+				// So, we ignore this trigger and do nothing.
+				sub <- ui.AegisLogMsg("Build already in progress. Ignoring trigger.")
+				continue
+			}
 			sub <- ui.AegisLogMsg("Debounce timer fired. Triggering reload...")
 			go buildAndRun(cfg, sub) 
 
