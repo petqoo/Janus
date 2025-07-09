@@ -36,4 +36,5 @@ func main() {
 		fmt.Printf("Error starting TUI: %v\n", err)
 		os.Exit(1)
 	}
+	stopProcess(nil)
 }

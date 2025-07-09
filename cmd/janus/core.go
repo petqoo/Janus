@@ -128,7 +128,6 @@ func startProcess(binPath string, sub chan any, cfg *config.Config) (*exec.Cmd, 
 		return nil, err
 	}
 
-	// Goroutine to stream stdout
 	go func() {
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
@@ -136,7 +135,6 @@ func startProcess(binPath string, sub chan any, cfg *config.Config) (*exec.Cmd, 
 		}
 	}()
 
-	// Goroutine to stream stderr
 	go func() {
 		scanner := bufio.NewScanner(stderr)
 		for scanner.Scan() {
@@ -174,7 +172,6 @@ func stopProcess(sub chan any) {
 	stableApp = nil
 }
 
-// revertToStable restores the last known good binary and restarts it.
 func revertToStable(cfg *config.Config, sub chan any) {
 	sub <- ui.StatusMsg("Reverting to stable version...")
 	sub <- ui.AegisLogMsg("Reverting to last stable version...")
