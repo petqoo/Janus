@@ -147,7 +147,6 @@ func startProcess(binPath string, sub chan any, cfg *config.Config) (*exec.Cmd, 
 	return cmd, nil
 }
 
-// stopProcess gracefully stops the stable application.
 func stopProcess(sub chan any) {
 	if stableApp == nil || stableApp.Process == nil {
 		return
@@ -209,7 +208,6 @@ func revertToStable(cfg *config.Config, sub chan any) {
 	sub <- ui.StatusMsg("App running (Stable)")
 }
 
-// isExcluded is a helper to check if a directory should be ignored.
 func isExcluded(dirName string, excludedDirs []string) bool {
 	for _, excluded := range excludedDirs {
 		if dirName == excluded {
