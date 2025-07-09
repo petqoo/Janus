@@ -44,11 +44,10 @@ func StartWatcher(cfg *config.Config, sub chan any) {
 			}
 			return timer.C
 		}():
-
+	    	defer buildLock.Unlock()
 			timer = nil
 			if !buildLock.TryLock() {
-				// If we can't get the lock, it means a build is already in progress.
-				// So, we ignore this trigger and do nothing.
+
 				sub <- ui.AegisLogMsg("Build already in progress. Ignoring trigger.")
 				continue
 			}
