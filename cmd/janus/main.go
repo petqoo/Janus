@@ -37,4 +37,6 @@ func main() {
 		os.Exit(1)
 	}
 	stopProcess(nil)
+	
+	os.Remove(cfg.Build.Bin)
 }

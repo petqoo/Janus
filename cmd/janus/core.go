@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -128,7 +129,7 @@ func buildAndRun(cfg *config.Config, sub chan any) {
 func startProcess(binPath string, sub chan any, cfg *config.Config) (*exec.Cmd, error) {
 	cmd := exec.Command(binPath)
 	cmd.Dir = cfg.Watch.Root
-
+    cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 
@@ -158,11 +159,15 @@ func stopProcess(sub chan any) {
 	if stableApp == nil || stableApp.Process == nil {
 		return
 	}
-
+	pid := stableApp.Process.Pid
+	if sub == nil {
+		syscall.Kill(-pid, syscall.SIGKILL)
+		return
+	}
 	sub <- ui.AegisLogMsg("Stopping stable process...")
-	if err := stableApp.Process.Signal(syscall.SIGTERM); err != nil {
-		sub <- ui.AegisLogMsg("Error sending SIGTERM, forcing kill.")
-		stableApp.Process.Kill()
+	if err := syscall.Kill(-pid, syscall.SIGTERM); err != nil {
+		sub <- ui.AegisLogMsg(fmt.Sprintf("Error sending SIGTERM (%v), forcing kill.", err))
+		syscall.Kill(-pid, syscall.SIGKILL)
 		return
 	}
 
@@ -174,7 +179,7 @@ func stopProcess(sub chan any) {
 	select {
 	case <-time.After(2 * time.Second):
 		sub <- ui.AegisLogMsg("Process did not stop gracefully, forcing kill.")
-		stableApp.Process.Kill()
+		syscall.Kill(-pid, syscall.SIGKILL)
 	case <-done:
 		sub <- ui.AegisLogMsg("Process stopped gracefully.")
 	}
